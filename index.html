@@ -103,7 +103,7 @@
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.5", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.6", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -137,6 +137,18 @@
       deliver:"\ud83d\udce4 Consegna foto (email con link cartella)",
       deliverConfirm:"Inviare l'email di consegna con il link alla sua cartella Drive?\n\nPrima assicurati di aver CARICATO le foto editate nella sua cartella (Women of Venice / Incontri / \u2026).",
       deliverSent:"Richiesta di consegna inviata \u2713 \u2014 controlla che l'email sia arrivata (anche in [copia] a te).",
+      pubKit:"\ud83d\udce3 Publish Kit",
+      pkNoSocial:"\u26a0 Nessun consenso social registrato nell'app. Procedi SOLO se hai un consenso scritto altrove (es. un \u201cs\u00ec\u201d via email).",
+      pkNoName:"Nota: niente nome/citazione \u2014 non ha autorizzato nome e storia. Caption anonima generata.",
+      pkCaption:"Caption (modificabile)",
+      pkTags:"Hashtag (primo commento)",
+      pkCopy:"\ud83d\udccb Copia",
+      pkCopied:"Copiato \u2713",
+      pkSteps:"1. Scegli la foto \u00b7 2. Incolla la caption \u00b7 3. Pubblica \u00b7 4. Hashtag nel primo commento \u00b7 5. Tagga lei se hai il suo IG \u00b7 6. Torna qui e segna Published",
+      pkMark:"Segna come Published \u2713",
+      anonCap1:"Un ritratto nato per strada, ", anonCap2:", a Venezia.",
+      capMet:"incontrata a Venezia il ",
+      capLine:"Ritratti e storie, un incontro alla volta.",
       settings:"Impostazioni", cfgUrl:"URL connettore Google (Apps Script)", cfgUrlPh:"https://script.google.com/…/exec",
       cfgAuto:"A fine incontro: invia subito a Drive + email di copia alla modella",
       cfgSave:"Salva impostazioni", cfgSaved:"Impostazioni salvate ✓",
@@ -148,7 +160,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.5", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.6", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -182,6 +194,18 @@
       deliver:"\ud83d\udce4 Deliver photos (email with folder link)",
       deliverConfirm:"Send the delivery email with the link to her Drive folder?\n\nFirst make sure you UPLOADED the edited photos into her folder (Women of Venice / Incontri / \u2026).",
       deliverSent:"Delivery request sent \u2713 \u2014 check that the email arrived (also as [copia] to you).",
+      pubKit:"\ud83d\udce3 Publish Kit",
+      pkNoSocial:"\u26a0 No social-media consent recorded in the app. Proceed ONLY if you have written consent elsewhere (e.g. a \u201cyes\u201d by email).",
+      pkNoName:"Note: no name/quote \u2014 she didn't authorise name and story. Anonymous caption generated.",
+      pkCaption:"Caption (editable)",
+      pkTags:"Hashtags (first comment)",
+      pkCopy:"\ud83d\udccb Copy",
+      pkCopied:"Copied \u2713",
+      pkSteps:"1. Pick the photo \u00b7 2. Paste the caption \u00b7 3. Publish \u00b7 4. Hashtags in first comment \u00b7 5. Tag her if you have her IG \u00b7 6. Come back and mark Published",
+      pkMark:"Mark as Published \u2713",
+      anonCap1:"A portrait born on the street, ", anonCap2:", in Venice.",
+      capMet:"met in Venice on ",
+      capLine:"Portraits and stories, one encounter at a time.",
       settings:"Settings", cfgUrl:"Google connector URL (Apps Script)", cfgUrlPh:"https://script.google.com/…/exec",
       cfgAuto:"On finish: immediately send to Drive + email her copy",
       cfgSave:"Save settings", cfgSaved:"Settings saved ✓",
@@ -416,7 +440,7 @@
     }
 
     else if(S.view==="detail" && S.sel){
-      const e=S.sel, idx=STATUSES.indexOf(e.status), nx=STATUSES[idx+1];
+      const e=S.sel, nx = e.status==="Published" ? null : (e.status==="Delivered" ? "Published" : "Delivered");
       const scopeList=Object.entries(e.scopes).filter(([,v])=>v).map(([k])=>_t.scopes[k]).join(" · ");
       const info=(l,v)=>`<div class="info"><div class="lbl" style="margin:0;padding-top:2px">${l}</div><div class="v">${v}</div></div>`;
       el.innerHTML = wrap(`
@@ -439,10 +463,41 @@
         ${e.signature?`<div style="margin:14px 0"><div class="lbl">${_t.signature}</div><img src="${e.signature}" style="width:100%;border:1.5px solid var(--inkF);border-radius:14px;background:#fff"></div>`:""}
         <button class="btn" data-a="deliverOne">${_t.deliver}</button>
         <div style="height:12px"></div>
+        <button class="btn ghost" data-a="pubKit">${_t.pubKit}</button>
+        <div style="height:12px"></div>
         <button class="btn ghost" data-a="syncOne">${_t.syncBtn}</button>
         <div style="height:12px"></div>
         ${nx?`<button class="btn ghost" data-a="advance">${_t.advance}: ${nx} →</button><div style="height:12px"></div>`:""}
         <button class="btn danger" data-a="erase">${_t.erase}</button>
+        ${S.note?`<div class="note">${S.note}</div>`:""}`);
+    }
+
+    else if(S.view==="pubkit" && S.sel){
+      const e=S.sel;
+      const first=(e.name||"").trim().split(" ")[0];
+      const dstr=new Date(e.createdAt).toLocaleDateString(S.lang==="it"?"it-IT":"en-GB",{day:"numeric",month:"long",year:"numeric"});
+      const motto="\u2726 I'll steal you from Chronos \u2014 and give you Kairos.";
+      let cap;
+      if(e.nameStory && (e.story||"").trim()){
+        cap="\u00ab"+e.story.trim()+"\u00bb\n\n\u2014 "+first+", "+_t.capMet+dstr+".\n\n"+_t.capLine+"\n"+motto;
+      } else if(e.nameStory && first){
+        cap=first+", "+_t.capMet+dstr+".\n\n"+_t.capLine+"\n"+motto;
+      } else {
+        cap=_t.anonCap1+dstr+_t.anonCap2+"\n\n"+_t.capLine+"\n"+motto;
+      }
+      const tags="#veneziagram #ritrattofotografico #portraitphotography #venezia #streetportrait #ritratto #venicephotography #womenofvenice";
+      el.innerHTML = wrap(`
+        <div class="top"><button class="back" data-a="backDetail">\u2190</button><div class="title serif">${_t.pubKit}</div>${langHTML()}</div>
+        ${e.scopes.social?"":`<div class="soft" style="margin-bottom:14px;border:1.5px solid #B3261E"><div style="font-size:13px;color:#B3261E;line-height:1.45">${_t.pkNoSocial}</div></div>`}
+        ${e.nameStory?"":`<div class="note" style="text-align:left;margin:0 0 12px">${_t.pkNoName}</div>`}
+        <div class="lbl">${_t.pkCaption}</div>
+        <textarea id="pk-cap" rows="8" class="serif" style="margin-bottom:8px">${esc(cap)}</textarea>
+        <button class="btn ghost" data-a="copyCap" style="margin-bottom:16px">${_t.pkCopy}</button>
+        <div class="lbl">${_t.pkTags}</div>
+        <textarea id="pk-tags" rows="3" style="margin-bottom:8px">${tags}</textarea>
+        <button class="btn ghost" data-a="copyTags" style="margin-bottom:16px">${_t.pkCopy}</button>
+        <div class="soft" style="margin-bottom:16px"><div style="font-size:13px;color:var(--inkS);line-height:1.5">${_t.pkSteps}${e.ig?` \u00b7 IG: <b>${esc(e.ig)}</b>`:""}</div></div>
+        <button class="btn" data-a="markPub">${_t.pkMark}</button>
         ${S.note?`<div class="note">${S.note}</div>`:""}`);
     }
   }
@@ -579,7 +634,17 @@
     }
     else if(a==="recStart"){ startRec(); }
     else if(a==="recStop"){ stopRec(); }
-    else if(a==="advance"){ const i=STATUSES.indexOf(S.sel.status); S.sel.status=STATUSES[i+1]; await saveEnc(S.sel); render(); }
+    else if(a==="pubKit"){ S.note=""; S.view="pubkit"; render(); }
+    else if(a==="backDetail"){ S.note=""; S.view="detail"; render(); }
+    else if(a==="copyCap" || a==="copyTags"){
+      const el2=document.getElementById(a==="copyCap"?"pk-cap":"pk-tags");
+      const txt=el2?el2.value:"";
+      try{ await navigator.clipboard.writeText(txt); S.note=t().pkCopied; }
+      catch(err){ if(el2){ el2.select(); try{ document.execCommand("copy"); S.note=t().pkCopied; }catch(e2){ S.note="\u26a0"; } } }
+      render();
+    }
+    else if(a==="markPub"){ S.sel.status="Published"; await saveEnc(S.sel); S.view="detail"; render(); }
+    else if(a==="advance"){ S.sel.status = (S.sel.status==="Delivered") ? "Published" : "Delivered"; await saveEnc(S.sel); render(); }
     else if(a==="erase"){ if(!window.confirm(t().eraseC)) return;
       try{ await store.delete("enc:"+S.sel.id); }catch(_){}
       S.sel=null; S.encs=await loadEncs(); S.view="home"; render(); }
