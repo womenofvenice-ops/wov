@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.6.1 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.6.2 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -99,13 +99,16 @@
   const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw8oG_NW-pYFDE9Tb9BkTUKGacfhW0lILsxfjvQ8qx-QZJGIYet99GkIyrSHZhcRxM/exec";
   const effUrl = () => (S.cfg.url && S.cfg.url.trim()) || DEFAULT_URL;
   const igUrl = h => "https://instagram.com/" + String(h||"").trim().replace(/^@+/,"");
+  const waLink = p => { const d=String(p||"").replace(/[^\d+]/g,""); if(!d) return "\u2014";
+    const wa="https://wa.me/"+d.replace(/^\+/,"");
+    return `<a href="${wa}" target="_blank" style="color:var(--red);font-weight:600;text-decoration:none">${esc(p)} \ud83d\udcac</a>`; };
   const igLink = h => h ? `<a href="${igUrl(h)}" target="_blank" style="color:var(--red);font-weight:600;text-decoration:none">@${esc(String(h).trim().replace(/^@+/,""))} \u2197</a>` : "\u2014";
   const persistent = store !== memStore;
 
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.6.1", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.6.2", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -128,7 +131,7 @@
       storyPh:"Le sue parole…", finish:"Concludi incontro →", skip:"Salta — la chiedo dopo",
       doneT:"Fatto!",
       doneB:(e,d)=>`Riceverai i tuoi ritratti a ${e} entro ${d} giorni, insieme a una copia di questo accordo. Grazie di aver fatto parte del progetto.`,
-      close:"Chiudi ✓", unnamed:"Senza nome", date:"Data", gps:"GPS", gpsNo:"non disponibile",
+      close:"Chiudi ✓", closeNew:"Chiudi e nuovo incontro", unnamed:"Senza nome", date:"Data", gps:"GPS", gpsNo:"non disponibile",
       onlyGift:"Nessuno — solo regalo", nsPub:"Nome+storia pubblicabili", yes:"Sì", no:"No",
       herStory:"La sua storia", signature:"Firma", advance:"Avanza a",
       erase:"Cancella dati (GDPR)", eraseC:"Cancellare tutti i dati di questa persona? (diritto all'oblio)",
@@ -162,7 +165,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.6.1", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.6.2", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -185,7 +188,7 @@
       storyPh:"Her words…", finish:"Finish encounter →", skip:"Skip — I'll ask later",
       doneT:"Done!",
       doneB:(e,d)=>`Your portraits will reach ${e} within ${d} days, together with a copy of this agreement. Thank you for being part of the project.`,
-      close:"Close ✓", unnamed:"Unnamed", date:"Date", gps:"GPS", gpsNo:"unavailable",
+      close:"Close ✓", closeNew:"Close & new encounter", unnamed:"Unnamed", date:"Date", gps:"GPS", gpsNo:"unavailable",
       onlyGift:"None — gift only", nsPub:"Name+story publishable", yes:"Yes", no:"No",
       herStory:"Her story", signature:"Signature", advance:"Advance to",
       erase:"Erase data (GDPR)", eraseC:"Erase all of this person's data? (right to be forgotten)",
@@ -436,7 +439,9 @@
           <div class="serif" style="font-size:30px;color:var(--ink);margin:14px 0 8px">${_t.doneT}</div>
           <div class="serif" style="font-size:16px;line-height:1.55;color:var(--inkS);margin-bottom:28px;padding:0 6px">${_t.doneB(esc(d.email)||"—", d.type==="tfp"?d.tfp.days:d.deliveryDays)}</div>
           <div style="font-size:11px;text-transform:uppercase;letter-spacing:.28em;color:var(--peach);margin-bottom:36px">Women of Venice · Portraits &amp; stories</div>
-          <button class="btn" data-a="closeDone">${_t.close}</button>
+          <button class="btn" data-a="closeNew">➕ ${_t.closeNew}</button>
+          <div style="height:12px"></div>
+          <button class="btn ghost" data-a="closeDone">${_t.close}</button>
           ${S.note?`<div class="note">${S.note}</div>`:""}
         </div>`);
     }
@@ -456,6 +461,7 @@
         ${e.photo?`<img src="${e.photo}" style="width:96px;height:96px;border-radius:18px;object-fit:cover;border:2px solid var(--creamD);margin-bottom:14px">`:""}
         ${info(_t.date,new Date(e.createdAt).toLocaleString(S.lang==='it'?'it-IT':'en-GB'))}
         ${info("Email",esc(e.email)||"—")}
+        ${e.phone?`<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(28,43,44,.10)"><div class="lbl" style="margin:0">${_t.phone}</div><div style="font-size:14.5px">${waLink(e.phone)}</div></div>`:""}
         ${e.ig?`<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(28,43,44,.10)"><div class="lbl" style="margin:0">${_t.ig}</div><div style="font-size:14.5px">${igLink(e.ig)}</div></div>`:info(_t.ig,"\u2014")}
         ${info(_t.gps,e.gps?e.gps.lat.toFixed(5)+", "+e.gps.lng.toFixed(5):_t.gpsNo)}
         ${info(_t.consents,scopeList||_t.onlyGift)}
@@ -609,13 +615,16 @@
     else if(a==="photo"){ const fp=document.getElementById("f-photo"); if(fp) fp.click(); }
     else if(a==="toStory"){ await saveEnc(S.draft); S.view="story"; render(); }
     else if(a==="toDone"){ await saveEnc(S.draft); S.view="done"; S.note=""; render(); }
-    else if(a==="closeDone"){
+    else if(a==="closeDone" || a==="closeNew"){
       await saveEnc(S.draft);
       if(S.cfg.auto){
         const r = await syncEnc(S.draft);
-        alert(r.ok ? ("✓ "+t().syncSent) : ("✗ "+t().syncFail+(r.msg?"\n\n"+r.msg:"")));
+        if(r.ok){ S.note="☁ "+t().syncSent; }
+        else { alert("✗ "+t().syncFail+(r.msg?"\n\n"+r.msg:"")); S.note=""; }
       }
-      S.draft=null; S.encs=await loadEncs(); S.view="home"; render();
+      S.draft=null; S.encs=await loadEncs();
+      S.view = (a==="closeNew") ? "type" : "home";
+      render();
     }
     else if(a==="open"){ S.sel=S.encs.find(e=>e.id===v); S.note=""; if(S.sel){ S.view="detail"; render(); } }
     else if(a==="syncOne"){
