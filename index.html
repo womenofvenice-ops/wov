@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.6.2 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.6.3 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -108,7 +108,7 @@
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.6.2", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.6.3", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -165,7 +165,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.6.2", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.6.3", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -319,7 +319,7 @@
           <button class="item" data-a="open" data-v="${e.id}">
             ${e.photo?`<img class="thumb" src="${e.photo}" style="width:48px;height:48px">`:`<div style="width:48px;height:48px;border-radius:14px;background:var(--creamD);display:flex;align-items:center;justify-content:center;flex-shrink:0">${arch(22,false,e.id)}</div>`}
             <div style="flex:1;min-width:0"><div class="serif" style="font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.name)||_t.unnamed}${e.synced?' <span style="color:#5B7A9A">☁</span>':''}</div>
-            <div style="font-size:12px;color:var(--inkS)">${new Date(e.createdAt).toLocaleDateString(S.lang==='it'?'it-IT':'en-GB')} · ${e.type.toUpperCase()}</div></div>
+            <div style="font-size:12px;color:var(--inkS)">${new Date(e.createdAt).toLocaleDateString(S.lang==='it'?'it-IT':'en-GB')} · ${e.type.toUpperCase()}${e.phone?` · \ud83d\udcde ${esc(e.phone)}`:""}</div></div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="badge" style="background:${SC[e.status]};color:${e.status==='Published'?'#F4ECDE':'#1C2B2C'}">${e.status}</span>${tfpChip(e)}</div>
           </button>`).join("");
       el.innerHTML = wrap(`
