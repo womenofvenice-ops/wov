@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.6 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.6.1 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -98,12 +98,14 @@
   const store = makeStore();
   const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw8oG_NW-pYFDE9Tb9BkTUKGacfhW0lILsxfjvQ8qx-QZJGIYet99GkIyrSHZhcRxM/exec";
   const effUrl = () => (S.cfg.url && S.cfg.url.trim()) || DEFAULT_URL;
+  const igUrl = h => "https://instagram.com/" + String(h||"").trim().replace(/^@+/,"");
+  const igLink = h => h ? `<a href="${igUrl(h)}" target="_blank" style="color:var(--red);font-weight:600;text-decoration:none">@${esc(String(h).trim().replace(/^@+/,""))} \u2197</a>` : "\u2014";
   const persistent = store !== memStore;
 
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.6", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.6.1", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -160,7 +162,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.6", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.6.1", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -454,7 +456,7 @@
         ${e.photo?`<img src="${e.photo}" style="width:96px;height:96px;border-radius:18px;object-fit:cover;border:2px solid var(--creamD);margin-bottom:14px">`:""}
         ${info(_t.date,new Date(e.createdAt).toLocaleString(S.lang==='it'?'it-IT':'en-GB'))}
         ${info("Email",esc(e.email)||"—")}
-        ${info(_t.ig,esc(e.ig)||"—")}
+        ${e.ig?`<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(28,43,44,.10)"><div class="lbl" style="margin:0">${_t.ig}</div><div style="font-size:14.5px">${igLink(e.ig)}</div></div>`:info(_t.ig,"\u2014")}
         ${info(_t.gps,e.gps?e.gps.lat.toFixed(5)+", "+e.gps.lng.toFixed(5):_t.gpsNo)}
         ${info(_t.consents,scopeList||_t.onlyGift)}
         ${info(_t.nsPub,e.nameStory?_t.yes:_t.no)}
@@ -496,7 +498,7 @@
         <div class="lbl">${_t.pkTags}</div>
         <textarea id="pk-tags" rows="3" style="margin-bottom:8px">${tags}</textarea>
         <button class="btn ghost" data-a="copyTags" style="margin-bottom:16px">${_t.pkCopy}</button>
-        <div class="soft" style="margin-bottom:16px"><div style="font-size:13px;color:var(--inkS);line-height:1.5">${_t.pkSteps}${e.ig?` \u00b7 IG: <b>${esc(e.ig)}</b>`:""}</div></div>
+        <div class="soft" style="margin-bottom:16px"><div style="font-size:13px;color:var(--inkS);line-height:1.5">${_t.pkSteps}${e.ig?` \u00b7 IG: ${igLink(e.ig)}`:""}</div></div>
         <button class="btn" data-a="markPub">${_t.pkMark}</button>
         ${S.note?`<div class="note">${S.note}</div>`:""}`);
     }
