@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Women of Venice — Photo Picker v1 · she taps hearts, her picks email themselves -->
+<!-- Women of Venice — Photo Picker v1.1 · she taps hearts, her picks email themselves -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -37,7 +37,7 @@
 (function(){
   var EXEC = "https://script.google.com/macros/s/AKfycbw8oG_NW-pYFDE9Tb9BkTUKGacfhW0lILsxfjvQ8qx-QZJGIYet99GkIyrSHZhcRxM/exec";
   var Q = new URLSearchParams(location.search);
-  var fid = Q.get("fid")||"", name = Q.get("n")||"", lang = (Q.get("lang")==="en")?"en":"it";
+  var fid = Q.get("fid")||"", name = Q.get("n")||"", lang = (Q.get("lang")==="en")?"en":"it", eid = Q.get("eid")||"";
   var T = lang==="en" ? {
     t:"Pick your favourites", h:"Tap the \u2764 on the photos you love most \u2014 choose between 5 and 20 \u2014 then press Send. That's all!",
     c1:"selected", send:"Send my favourites \u2192", min:"Pick at least 5 \u2764", max:"Maximum 20 \u2014 remove one first \ud83d\ude0a",
@@ -89,7 +89,7 @@
       var picks = Object.values(sel).sort();
       fetch(EXEC, { method:"POST", mode:"no-cors",
         headers:{ "Content-Type":"text/plain;charset=utf-8" },
-        body: JSON.stringify({ action:"picks", record:{ fid:fid, name:name, lang:lang, picks:picks } }) });
+        body: JSON.stringify({ action:"picks", record:{ fid:fid, name:name, lang:lang, id:eid, picks:picks } }) });
       app.innerHTML = '<div class="done"><div class="big">\u2764\ufe0f</div><h1>'+T.ty+'</h1>'+
         '<div class="hint" style="margin-top:10px">'+T.ty2+'</div>'+
         '<div class="motto">\u2726 I\u2019ll steal you from Chronos \u2014 and give you Kairos.</div></div>';
