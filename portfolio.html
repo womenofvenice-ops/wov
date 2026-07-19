@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Women of Venice — Portfolio v1.1 · public gallery, self-feeding from Drive/Portfolio -->
+<!-- Women of Venice — Portfolio v1.2 · public gallery, self-feeding from Drive/Portfolio -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -37,7 +37,7 @@
   </div>
   <div id="g" class="grid"><div class="load">Caricamento… / Loading…</div></div>
   <div class="foot">
-    Ritratti e storie, un incontro alla volta · Venezia<br>
+    Portraits &amp; stories, one encounter at a time · Venezia<br>
     <a href="mailto:womenofvenice@gmail.com">womenofvenice@gmail.com</a> · <a href="https://linktr.ee/womenofvenice">linktr.ee/womenofvenice</a>
   </div>
 </div>
@@ -60,10 +60,16 @@
              '<img loading="lazy" src="https://drive.google.com/thumbnail?id='+f.id+'&sz=w800" alt="Women of Venice portrait"></a>';
     }).join("");
   };
-  var s = document.createElement("script");
-  s.src = EXEC + "?action=portfolio&callback=wovPortfolio";
-  s.onerror = function(){ g.innerHTML = '<div class="load">Errore di caricamento — riprova / Loading error — retry.</div>'; };
-  document.body.appendChild(s);
+  function jsonpFallback(){
+    var s = document.createElement("script");
+    s.src = EXEC + "?action=portfolio&callback=wovPortfolio";
+    s.onerror = function(){ g.innerHTML = '<div class="load">Errore di caricamento — riprova / Loading error — retry.</div>'; };
+    document.body.appendChild(s);
+  }
+  fetch(EXEC + "?action=portfolio&format=json")
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(data){ window.wovPortfolio(data); })
+    .catch(jsonpFallback);
 })();
 </script>
 </body>
