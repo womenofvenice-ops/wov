@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.7.1 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.7.2 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -122,7 +122,7 @@
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.7.1", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.7.2", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -185,7 +185,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.7.1", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.7.2", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -724,8 +724,8 @@
       catch(err){ if(el2){ el2.select(); try{ document.execCommand("copy"); S.note=t().pkCopied; }catch(e2){ S.note="\u26a0"; } } }
       render();
     }
-    else if(a==="markPub"){ S.sel.status="Published"; await saveEnc(S.sel); S.view="detail"; render(); }
-    else if(a==="advance"){ S.sel.status = (S.sel.status==="Delivered") ? "Published" : "Delivered"; await saveEnc(S.sel); render(); }
+    else if(a==="markPub"){ S.sel.status="Published"; await saveEnc(S.sel); sendAction({ action:"status", record:{ id:S.sel.id, status:"Published" } }); S.view="detail"; render(); }
+    else if(a==="advance"){ S.sel.status = (S.sel.status==="Delivered") ? "Published" : "Delivered"; await saveEnc(S.sel); sendAction({ action:"status", record:{ id:S.sel.id, status:S.sel.status } }); render(); }
     else if(a==="erase"){ if(!window.confirm(t().eraseC)) return;
       try{ await store.delete("enc:"+S.sel.id); }catch(_){}
       S.sel=null; S.encs=await loadEncs(); S.view="home"; render(); }
