@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.7 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.7.1 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -122,7 +122,7 @@
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.7", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.7.1", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -159,6 +159,9 @@
       deliver:"\ud83d\udce4 Consegna foto (email con link cartella)",
       deliverConfirm:"Inviare l'email di consegna con il link alla sua cartella Drive?\n\nPrima assicurati di aver CARICATO le foto editate nella sua cartella (Women of Venice / Incontri / \u2026).",
       deliverSent:"Richiesta di consegna inviata \u2713 \u2014 controlla che l'email sia arrivata (anche in [copia] a te).",
+      proofs:"\ud83d\uddbc Invia provini (scegli tu)",
+      proofsConfirm:"Inviare l'email con il link ai PROVINI?\n\nPrima assicurati di aver caricato le foto NUMERATE nella sua cartella (seleziona tutte \u2192 F2 \u2192 WoV_Nome \u2192 Invio).",
+      proofsSent:"Invito ai provini inviato \u2713 \u2014 aspetta la sua risposta coi numeri.",
       pubKit:"\ud83d\udce3 Publish Kit",
       pkNoSocial:"\u26a0 Nessun consenso social registrato nell'app. Procedi SOLO se hai un consenso scritto altrove (es. un \u201cs\u00ec\u201d via email).",
       pkNoName:"Nota: niente nome/citazione \u2014 non ha autorizzato nome e storia. Caption anonima generata.",
@@ -182,7 +185,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.7", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.7.1", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -219,6 +222,9 @@
       deliver:"\ud83d\udce4 Deliver photos (email with folder link)",
       deliverConfirm:"Send the delivery email with the link to her Drive folder?\n\nFirst make sure you UPLOADED the edited photos into her folder (Women of Venice / Incontri / \u2026).",
       deliverSent:"Delivery request sent \u2713 \u2014 check that the email arrived (also as [copia] to you).",
+      proofs:"\ud83d\uddbc Send proofs (she picks)",
+      proofsConfirm:"Send the email with the PROOFS link?\n\nFirst make sure you uploaded the NUMBERED photos into her folder (select all \u2192 F2 \u2192 WoV_Name \u2192 Enter).",
+      proofsSent:"Proofs invitation sent \u2713 \u2014 wait for her reply with the numbers.",
       pubKit:"\ud83d\udce3 Publish Kit",
       pkNoSocial:"\u26a0 No social-media consent recorded in the app. Proceed ONLY if you have written consent elsewhere (e.g. a \u201cyes\u201d by email).",
       pkNoName:"Note: no name/quote \u2014 she didn't authorise name and story. Anonymous caption generated.",
@@ -491,6 +497,8 @@
         ${e.story?`<div class="soft" style="margin:14px 0"><div class="lbl" style="color:var(--peach)">${_t.herStory}</div><div class="serif" style="font-style:italic;font-size:15px;color:var(--ink)">"${esc(e.story)}"</div></div>`:""}
         ${e.audio?`<div style="margin:14px 0"><div class="lbl">${_t.memo}</div><audio controls src="${e.audio}" style="width:100%"></audio></div>`:""}
         ${e.signature?`<div style="margin:14px 0"><div class="lbl">${_t.signature}</div><img src="${e.signature}" style="width:100%;border:1.5px solid var(--inkF);border-radius:14px;background:#fff"></div>`:""}
+        <button class="btn ghost" data-a="proofsOne">${_t.proofs}</button>
+        <div style="height:12px"></div>
         <button class="btn" data-a="deliverOne">${_t.deliver}</button>
         <div style="height:12px"></div>
         <button class="btn ghost" data-a="pubKit">${_t.pubKit}</button>
@@ -677,6 +685,13 @@
       S.note = r.ok ? t().syncSent : t().syncFail;
       alert(r.ok ? ("\u2713 "+t().syncSent) : ("\u2717 "+t().syncFail+(r.msg?"\n\n"+r.msg:"")));
       render();
+    }
+    else if(a==="proofsOne"){
+      if(window.confirm(t().proofsConfirm)){
+        const r = await sendAction({ action:"proofs", record:S.sel });
+        alert(r.ok ? ("\u2713 "+t().proofsSent) : ("\u2717 "+t().syncFail+(r.msg?"\n\n"+r.msg:"")));
+        render();
+      }
     }
     else if(a==="deliverOne"){
       if(window.confirm(t().deliverConfirm)){
