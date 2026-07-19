@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- Women of Venice — Portfolio v1 · public gallery, self-feeding from Drive/Portfolio -->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Women of Venice — Portraits & stories</title>
+<style>
+  :root{ --cream:#F4ECDE; --ink:#1C2B2C; --inkS:#5A6667; --red:#A8492E; --peach:#E09A73; }
+  *{ box-sizing:border-box; margin:0; }
+  body{ font-family:Georgia,'Times New Roman',serif; background:var(--cream); color:var(--ink); min-height:100vh; }
+  .wrap{ max-width:860px; margin:0 auto; padding:30px 14px 60px; }
+  h1{ font-size:26px; text-align:center; letter-spacing:.05em; }
+  .sub{ font-family:Arial,sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:.3em; color:var(--peach); text-align:center; margin:6px 0 4px; }
+  .motto{ font-style:italic; text-align:center; color:var(--red); font-size:15px; margin:10px 0 22px; }
+  .cta{ text-align:center; margin-bottom:26px; }
+  .cta a{ display:inline-block; font-family:Arial,sans-serif; font-size:13.5px; font-weight:700; color:var(--ink);
+    text-decoration:none; padding:11px 20px; border-radius:16px; margin:4px;
+    background:linear-gradient(135deg,#F6CDAB 0%,#EFB98F 45%,#E09A73 100%); box-shadow:inset 0 1px 0 rgba(255,255,255,.45); }
+  .cta a.ghost{ background:transparent; border:1.5px solid rgba(28,43,44,.35); font-weight:600; }
+  .grid{ columns:2 280px; column-gap:12px; }
+  .grid a{ display:block; margin-bottom:12px; border-radius:14px; overflow:hidden; background:#e8dfcd; }
+  .grid img{ width:100%; display:block; }
+  .load{ text-align:center; font-family:Arial,sans-serif; color:var(--inkS); padding:50px 0; }
+  .foot{ text-align:center; font-family:Arial,sans-serif; font-size:12px; color:var(--inkS); margin-top:34px; line-height:1.7; }
+  .foot a{ color:var(--red); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Women of Venice</h1>
+  <div class="sub">Portraits &amp; stories · Venezia</div>
+  <div class="motto">✦ I'll steal you from Chronos — and give you Kairos.</div>
+  <div class="cta">
+    <a href="https://womenofvenice-ops.github.io/wov/booking.html">📸 Book a session · da €90</a>
+    <a class="ghost" href="https://instagram.com/women_of_venice" target="_blank">Instagram ↗</a>
+  </div>
+  <div id="g" class="grid"><div class="load">Caricamento… / Loading…</div></div>
+  <div class="foot">
+    Ritratti e storie, un incontro alla volta · ogni sabato sera a Venezia<br>
+    <a href="mailto:womenofvenice@gmail.com">womenofvenice@gmail.com</a> · <a href="https://linktr.ee/womenofvenice">linktr.ee/womenofvenice</a>
+  </div>
+</div>
+<script>
+(function(){
+  var EXEC = "https://script.google.com/macros/s/AKfycbw8oG_NW-pYFDE9Tb9BkTUKGacfhW0lILsxfjvQ8qx-QZJGIYet99GkIyrSHZhcRxM/exec";
+  var g = document.getElementById("g");
+  window.wovPortfolio = function(data){
+    var files = (data && data.files) || [];
+    if (!files.length) {
+      g.innerHTML = '<div class="load">Il portfolio sta nascendo — torna presto ✦<br>The portfolio is being born — come back soon ✦</div>';
+      return;
+    }
+    g.innerHTML = files.map(function(f){
+      return '<a href="https://drive.google.com/uc?export=view&id='+f.id+'" target="_blank">'+
+             '<img loading="lazy" src="https://drive.google.com/thumbnail?id='+f.id+'&sz=w800" alt="Women of Venice portrait"></a>';
+    }).join("");
+  };
+  var s = document.createElement("script");
+  s.src = EXEC + "?action=portfolio&callback=wovPortfolio";
+  s.onerror = function(){ g.innerHTML = '<div class="load">Errore di caricamento — riprova / Loading error — retry.</div>'; };
+  document.body.appendChild(s);
+})();
+</script>
+</body>
+</html>
