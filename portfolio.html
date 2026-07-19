@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Women of Venice — Portfolio v1.2 · public gallery, self-feeding from Drive/Portfolio -->
+<!-- Women of Venice — Portfolio v2 · public gallery, self-feeding from the repo folder /portfolio -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -43,33 +43,22 @@
 </div>
 <script>
 (function(){
-  var EXEC = "https://script.google.com/macros/s/AKfycbw8oG_NW-pYFDE9Tb9BkTUKGacfhW0lILsxfjvQ8qx-QZJGIYet99GkIyrSHZhcRxM/exec";
+  var API = "https://api.github.com/repos/womenofvenice-ops/wov/contents/portfolio";
   var g = document.getElementById("g");
-  window.wovPortfolio = function(data){
-    var files = (data && data.files) || [];
-    if (data && data.error) {
-      g.innerHTML = '<div class="load">Connector says: '+String(data.error).replace(/</g,"&lt;")+'</div>';
-      return;
-    }
-    if (!files.length) {
-      g.innerHTML = '<div class="load">Il portfolio sta nascendo — torna presto ✦<br>The portfolio is being born — come back soon ✦</div>';
-      return;
-    }
-    g.innerHTML = files.map(function(f){
-      return '<a href="https://drive.google.com/uc?export=view&id='+f.id+'" target="_blank">'+
-             '<img loading="lazy" src="https://drive.google.com/thumbnail?id='+f.id+'&sz=w800" alt="Women of Venice portrait"></a>';
-    }).join("");
-  };
-  function jsonpFallback(){
-    var s = document.createElement("script");
-    s.src = EXEC + "?action=portfolio&callback=wovPortfolio";
-    s.onerror = function(){ g.innerHTML = '<div class="load">Errore di caricamento — riprova / Loading error — retry.</div>'; };
-    document.body.appendChild(s);
-  }
-  fetch(EXEC + "?action=portfolio&format=json")
-    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-    .then(function(data){ window.wovPortfolio(data); })
-    .catch(jsonpFallback);
+  var EXT = /\.(jpe?g|png|webp|gif)$/i;
+  function born(){ g.innerHTML = '<div class="load">Il portfolio sta nascendo — torna presto ✦<br>The portfolio is being born — come back soon ✦</div>'; }
+  fetch(API)
+    .then(function(r){ if (r.status === 404) { born(); throw "empty"; } if(!r.ok) throw "err"; return r.json(); })
+    .then(function(list){
+      var files = (list || []).filter(function(f){ return f.type === "file" && EXT.test(f.name); });
+      files.sort(function(a,b){ return a.name < b.name ? -1 : 1; });
+      if (!files.length) { born(); return; }
+      g.innerHTML = files.map(function(f){
+        return '<a href="'+f.download_url+'" target="_blank">'+
+               '<img loading="lazy" src="'+f.download_url+'" alt="Women of Venice portrait"></a>';
+      }).join("");
+    })
+    .catch(function(e){ if (e !== "empty") g.innerHTML = '<div class="load">Loading error — retry / Errore di caricamento — riprova.</div>'; });
 })();
 </script>
 </body>
