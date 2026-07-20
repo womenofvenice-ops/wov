@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.8 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.8.1 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -122,7 +122,7 @@
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.8", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.8.1", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -150,8 +150,7 @@
       qHint:"Scegli il mood \u2192 copia caption e hashtag \u2192 apri Instagram \u2192 incolla.",
       qVary:"\u21bb Varia", qOpenIG:"Apri Instagram \u2197",
       lead:"\ud83d\udc4b Quick contact", leadT:"Quick contact",
-      leadHint:"Per donne conosciute SENZA firma app (eventi, altre citt\u00e0). Riceve subito un'email di benvenuto personalizzata con sito e Instagram.",
-      leadWhere:"Dove vi siete conosciuti? (es. SheTech Treviso)",
+      leadWhere:"Dove? (es. SheTech Treviso)",
       leadNote:"Nota per te (opzionale)",
       leadSend:"\u2709 Salva e invia benvenuto",
       leadSent:"Benvenuto inviato \u2713 \u2014 \u00e8 nei contatti (Leads WOV) e nel foglio.",
@@ -192,7 +191,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.8", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.8.1", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -220,8 +219,7 @@
       qHint:"Pick a mood \u2192 copy caption & hashtags \u2192 open Instagram \u2192 paste.",
       qVary:"\u21bb Vary", qOpenIG:"Open Instagram \u2197",
       lead:"\ud83d\udc4b Quick contact", leadT:"Quick contact",
-      leadHint:"For women met WITHOUT an app signature (events, other cities). She instantly receives a personalized welcome email with the site and Instagram.",
-      leadWhere:"Where did you meet? (e.g. SheTech Treviso)",
+      leadWhere:"Where? (e.g. SheTech Treviso)",
       leadNote:"Note for yourself (optional)",
       leadSend:"\u2709 Save & send welcome",
       leadSent:"Welcome sent \u2713 \u2014 she's in contacts (Leads WOV) and the sheet.",
@@ -530,7 +528,6 @@
       if(!S.ld) S.ld={name:"",email:"",ig:"",where:"",note:""};
       el.innerHTML = wrap(`
         <div class="top"><button class="back" data-a="goHome">\u2190</button><div class="title serif">${_t.leadT}</div>${langHTML()}</div>
-        <div class="note" style="text-align:left;margin:0 0 14px">${_t.leadHint}</div>
         <label style="display:block;margin-bottom:14px"><div class="lbl">${_t.name} *</div><input type="text" id="f-l-name" value="${esc(S.ld.name)}"></label>
         <label style="display:block;margin-bottom:14px"><div class="lbl">Email *</div><input type="email" id="f-l-email" value="${esc(S.ld.email)}" autocapitalize="off"></label>
         <label style="display:block;margin-bottom:14px"><div class="lbl">${_t.ig}</div><input type="text" id="f-l-ig" value="${esc(S.ld.ig)}" placeholder="@"></label>
