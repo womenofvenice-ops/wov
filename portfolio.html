@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Women of Venice — Portfolio v2.1 · public gallery, self-feeding from the repo folder /portfolio -->
+<!-- Women of Venice — Portfolio v2.2 · public gallery, self-feeding from the repo folder /portfolio -->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -23,6 +23,14 @@
   .grid a.wide{ flex-basis:100%; }
   .grid img{ width:100%; display:block; }
   .load{ text-align:center; font-family:Arial,sans-serif; color:var(--inkS); padding:50px 0; }
+  .lb{ position:fixed; inset:0; background:rgba(28,43,44,.94); display:none; z-index:50; }
+  .lb.on{ display:flex; align-items:center; justify-content:center; }
+  .lb img{ max-width:94vw; max-height:88vh; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,.5); }
+  .lb button{ position:absolute; background:none; border:none; color:#F4ECDE; cursor:pointer; font-size:34px; padding:14px; line-height:1; }
+  .lb .x{ top:8px; right:10px; font-size:26px; }
+  .lb .pv{ left:2px; top:50%; transform:translateY(-50%); }
+  .lb .nx{ right:2px; top:50%; transform:translateY(-50%); }
+  .lb .cnt{ position:absolute; bottom:12px; left:0; right:0; text-align:center; color:#E09A73; font-family:Arial,sans-serif; font-size:12px; letter-spacing:.2em; }
   .foot{ text-align:center; font-family:Arial,sans-serif; font-size:12px; color:var(--inkS); margin-top:34px; line-height:1.7; }
   .foot a{ color:var(--red); }
 </style>
@@ -37,6 +45,13 @@
     <a class="ghost" href="https://instagram.com/women_of_venice" target="_blank">Instagram ↗</a>
   </div>
   <div id="g" class="grid"><div class="load">Caricamento… / Loading…</div></div>
+  <div class="lb" id="lb">
+    <button class="x" id="lb-x">✕</button>
+    <button class="pv" id="lb-pv">‹</button>
+    <img id="lb-img" alt="Women of Venice">
+    <button class="nx" id="lb-nx">›</button>
+    <div class="cnt" id="lb-cnt"></div>
+  </div>
   <div class="foot">
     Portraits &amp; stories, one encounter at a time · Venezia<br>
     <a href="mailto:womenofvenice@gmail.com">womenofvenice@gmail.com</a> · <a href="https://linktr.ee/womenofvenice">linktr.ee/womenofvenice</a>
@@ -54,14 +69,41 @@
       var files = (list || []).filter(function(f){ return f.type === "file" && EXT.test(f.name); });
       files.sort(function(a,b){ return a.name < b.name ? -1 : 1; });
       if (!files.length) { born(); return; }
-      g.innerHTML = files.map(function(f){
-        return '<a href="'+f.download_url+'" target="_blank">'+
+      var urls = files.map(function(f){ return f.download_url; });
+      g.innerHTML = files.map(function(f, i){
+        return '<a href="'+f.download_url+'" data-i="'+i+'">'+
                '<img loading="lazy" src="'+f.download_url+'" alt="Women of Venice portrait"></a>';
       }).join("");
       Array.prototype.forEach.call(g.querySelectorAll("img"), function(im){
         function tag(){ if (im.naturalWidth >= im.naturalHeight * 1.1) im.parentNode.classList.add("wide"); }
         if (im.complete && im.naturalWidth) tag(); else im.onload = tag;
       });
+      // ---- lightbox ----
+      var lb = document.getElementById("lb"), lbImg = document.getElementById("lb-img"),
+          cnt = document.getElementById("lb-cnt"), cur = 0;
+      function show(i){ cur = (i + urls.length) % urls.length; lbImg.src = urls[cur];
+        cnt.textContent = (cur+1) + " / " + urls.length; lb.classList.add("on"); }
+      function hide(){ lb.classList.remove("on"); lbImg.src = ""; }
+      Array.prototype.forEach.call(g.querySelectorAll("a"), function(a){
+        a.onclick = function(ev){ ev.preventDefault(); show(+a.getAttribute("data-i")); };
+      });
+      document.getElementById("lb-x").onclick = hide;
+      document.getElementById("lb-pv").onclick = function(){ show(cur-1); };
+      document.getElementById("lb-nx").onclick = function(){ show(cur+1); };
+      lb.onclick = function(ev){ if (ev.target === lb) hide(); };
+      document.addEventListener("keydown", function(ev){
+        if (!lb.classList.contains("on")) return;
+        if (ev.key === "ArrowLeft") show(cur-1);
+        else if (ev.key === "ArrowRight") show(cur+1);
+        else if (ev.key === "Escape") hide();
+      });
+      var tx = null;
+      lb.addEventListener("touchstart", function(ev){ tx = ev.changedTouches[0].clientX; }, {passive:true});
+      lb.addEventListener("touchend", function(ev){
+        if (tx === null) return;
+        var dx = ev.changedTouches[0].clientX - tx; tx = null;
+        if (dx > 45) show(cur-1); else if (dx < -45) show(cur+1);
+      }, {passive:true});
     })
     .catch(function(e){ if (e !== "empty") g.innerHTML = '<div class="load">Loading error — retry / Errore di caricamento — riprova.</div>'; });
 })();
