@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.7.2 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.8 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -122,7 +122,7 @@
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.7.2", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.8", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -148,7 +148,14 @@
       close:"Chiudi ✓", closeNew:"Chiudi e nuovo incontro",
       qpost:"\ud83d\udce3 Quick Post", qTitle:"Quick Post",
       qHint:"Scegli il mood \u2192 copia caption e hashtag \u2192 apri Instagram \u2192 incolla.",
-      qVary:"\u21bb Varia", qOpenIG:"Apri Instagram \u2197", unnamed:"Senza nome", date:"Data", gps:"GPS", gpsNo:"non disponibile",
+      qVary:"\u21bb Varia", qOpenIG:"Apri Instagram \u2197",
+      lead:"\ud83d\udc4b Quick contact", leadT:"Quick contact",
+      leadHint:"Per donne conosciute SENZA firma app (eventi, altre citt\u00e0). Riceve subito un'email di benvenuto personalizzata con sito e Instagram.",
+      leadWhere:"Dove vi siete conosciuti? (es. SheTech Treviso)",
+      leadNote:"Nota per te (opzionale)",
+      leadSend:"\u2709 Salva e invia benvenuto",
+      leadSent:"Benvenuto inviato \u2713 \u2014 \u00e8 nei contatti (Leads WOV) e nel foglio.",
+      leadNeed:"Servono almeno nome ed email.", unnamed:"Senza nome", date:"Data", gps:"GPS", gpsNo:"non disponibile",
       onlyGift:"Nessuno — solo regalo", nsPub:"Nome+storia pubblicabili", yes:"Sì", no:"No",
       herStory:"La sua storia", signature:"Firma", advance:"Avanza a",
       erase:"Cancella dati (GDPR)", eraseC:"Cancellare tutti i dati di questa persona? (diritto all'oblio)",
@@ -185,7 +192,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.7.2", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.8", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -211,7 +218,14 @@
       close:"Close ✓", closeNew:"Close & new encounter",
       qpost:"\ud83d\udce3 Quick Post", qTitle:"Quick Post",
       qHint:"Pick a mood \u2192 copy caption & hashtags \u2192 open Instagram \u2192 paste.",
-      qVary:"\u21bb Vary", qOpenIG:"Open Instagram \u2197", unnamed:"Unnamed", date:"Date", gps:"GPS", gpsNo:"unavailable",
+      qVary:"\u21bb Vary", qOpenIG:"Open Instagram \u2197",
+      lead:"\ud83d\udc4b Quick contact", leadT:"Quick contact",
+      leadHint:"For women met WITHOUT an app signature (events, other cities). She instantly receives a personalized welcome email with the site and Instagram.",
+      leadWhere:"Where did you meet? (e.g. SheTech Treviso)",
+      leadNote:"Note for yourself (optional)",
+      leadSend:"\u2709 Save & send welcome",
+      leadSent:"Welcome sent \u2713 \u2014 she's in contacts (Leads WOV) and the sheet.",
+      leadNeed:"At least name and email are needed.", unnamed:"Unnamed", date:"Date", gps:"GPS", gpsNo:"unavailable",
       onlyGift:"None — gift only", nsPub:"Name+story publishable", yes:"Yes", no:"No",
       herStory:"Her story", signature:"Signature", advance:"Advance to",
       erase:"Erase data (GDPR)", eraseC:"Erase all of this person's data? (right to be forgotten)",
@@ -362,6 +376,8 @@
         <button class="btn" data-a="goType">${_t.newEnc}</button>
         <div style="height:12px"></div>
         <button class="btn ghost" data-a="qpost">${_t.qpost}</button>
+        <div style="height:12px"></div>
+        <button class="btn ghost" data-a="leadOpen">${_t.lead}</button>
         <div class="lbl" style="margin:28px 0 12px">${_t.encs} ${S.loading?"…":`(${S.encs.length})`}</div>
         ${list}
         ${S.encs.length?`<div style="height:8px"></div><button class="btn ghost" data-a="export">${_t.exportBtn}</button>`:""}`);
@@ -507,6 +523,20 @@
         <div style="height:12px"></div>
         ${nx?`<button class="btn ghost" data-a="advance">${_t.advance}: ${nx} →</button><div style="height:12px"></div>`:""}
         <button class="btn danger" data-a="erase">${_t.erase}</button>
+        ${S.note?`<div class="note">${S.note}</div>`:""}`);
+    }
+
+    else if(S.view==="leadv"){
+      if(!S.ld) S.ld={name:"",email:"",ig:"",where:"",note:""};
+      el.innerHTML = wrap(`
+        <div class="top"><button class="back" data-a="goHome">\u2190</button><div class="title serif">${_t.leadT}</div>${langHTML()}</div>
+        <div class="note" style="text-align:left;margin:0 0 14px">${_t.leadHint}</div>
+        <label style="display:block;margin-bottom:14px"><div class="lbl">${_t.name} *</div><input type="text" id="f-l-name" value="${esc(S.ld.name)}"></label>
+        <label style="display:block;margin-bottom:14px"><div class="lbl">Email *</div><input type="email" id="f-l-email" value="${esc(S.ld.email)}" autocapitalize="off"></label>
+        <label style="display:block;margin-bottom:14px"><div class="lbl">${_t.ig}</div><input type="text" id="f-l-ig" value="${esc(S.ld.ig)}" placeholder="@"></label>
+        <label style="display:block;margin-bottom:14px"><div class="lbl">${_t.leadWhere}</div><input type="text" id="f-l-where" value="${esc(S.ld.where)}"></label>
+        <label style="display:block;margin-bottom:18px"><div class="lbl">${_t.leadNote}</div><input type="text" id="f-l-note" value="${esc(S.ld.note)}"></label>
+        <button class="btn" data-a="leadSend">${_t.leadSend}</button>
         ${S.note?`<div class="note">${S.note}</div>`:""}`);
     }
 
@@ -705,6 +735,17 @@
     }
     else if(a==="recStart"){ startRec(); }
     else if(a==="recStop"){ stopRec(); }
+    else if(a==="leadOpen"){ S.note=""; S.ld={name:"",email:"",ig:"",where:"",note:""}; S.view="leadv"; render(); }
+    else if(a==="leadSend"){
+      const gv=id=>{ const el4=document.getElementById(id); return el4?el4.value.trim():""; };
+      S.ld={ name:gv("f-l-name"), email:gv("f-l-email"), ig:gv("f-l-ig"), where:gv("f-l-where"), note:gv("f-l-note") };
+      if(!S.ld.name || !S.ld.email){ alert(t().leadNeed); return; }
+      const r = await sendAction({ action:"lead", record:{ id:"L"+Date.now(), createdAt:new Date().toISOString(), lang:S.lang,
+        name:S.ld.name, email:S.ld.email, ig:S.ld.ig, where:S.ld.where, note:S.ld.note } });
+      if(r.ok){ S.note="\u2601 "+t().leadSent; S.ld={name:"",email:"",ig:"",where:"",note:""}; }
+      else { alert("\u2717 "+t().syncFail+(r.msg?"\n\n"+r.msg:"")); }
+      render();
+    }
     else if(a==="qpost"){ S.note=""; S.view="qpost"; render(); }
     else if(a==="qMood"){ S.qMood=v; S.qVar=0; S.note=""; render(); }
     else if(a==="qVary"){ S.qVar=(S.qVar||0)+1; S.note=""; render(); }
