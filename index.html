@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.8.1 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.8.2 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -96,7 +96,7 @@
     } catch(e){ return memStore; }
   }
   const store = makeStore();
-  const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw8oG_NW-pYFDE9Tb9BkTUKGacfhW0lILsxfjvQ8qx-QZJGIYet99GkIyrSHZhcRxM/exec";
+  const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbw1sia4uM2Xfc3_xP4umiZAPC77_XAyS4R86_oRgV1HHfM1CNRdRCG31SuCqJwFMc8/exec";
   const effUrl = () => (S.cfg.url && S.cfg.url.trim()) || DEFAULT_URL;
   const igUrl = h => "https://instagram.com/" + String(h||"").trim().replace(/^@+/,"");
   const waLink = p => { const d=String(p||"").replace(/[^\d+]/g,""); if(!d) return "\u2014";
@@ -122,7 +122,7 @@
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.8.1", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.8.2", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -191,7 +191,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.8.1", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.8.2", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
