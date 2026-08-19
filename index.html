@@ -1,4 +1,4 @@
-<!-- Women of Venice — Field Companion v0.8.3 (single-file HTML)
+<!-- Women of Venice — Field Companion v0.8.4 (single-file HTML)
      Runs in the Claude chat (account storage) AND as a downloaded file in any browser (device storage).
      Optional: connects to a Google Apps Script that saves every encounter to Drive and emails the model her signed copy. -->
 <title>WoV — Women of Venice</title>
@@ -110,7 +110,7 @@
   // ——— i18n ———
   const T = {
     it: {
-      tagline:"Compagno di campo · v0.8.3", newEnc:"+ Nuovo incontro", encs:"Incontri",
+      tagline:"Compagno di campo · v0.8.4", newEnc:"+ Nuovo incontro", encs:"Incontri",
       emptyT:"Nessun incontro ancora.", emptyB:"Il primo ritratto ti aspetta in un campo di Venezia.",
       memWarn:"Attenzione: memoria di sessione — i dati spariscono chiudendo la pagina.",
       typeT:"Tipo di incontro", street:"Street", streetD:"Ritratto spontaneo per strada — liberatoria standard",
@@ -153,6 +153,9 @@
       deliver:"\ud83d\udce4 Consegna foto (email con link cartella)",
       deliverConfirm:"Inviare l'email di consegna con il link alla sua cartella Drive?\n\nPrima assicurati di aver CARICATO le foto editate nella sua cartella (Women of Venice / Incontri / \u2026).",
       deliverSent:"Richiesta di consegna inviata \u2713 \u2014 controlla che l'email sia arrivata (anche in [copia] a te).",
+      sendPhotos:"\ud83d\udcf8 Invia foto (scegli dal telefono)",
+      sendPhotosConfirm:n=>`Caricare ${n} foto e inviarle subito via email?`,
+      sendPhotosSent:n=>`\u2713 ${n} foto caricate e inviate!`,
       proofs:"\ud83d\uddbc Invia provini (scegli tu)",
       proofsConfirm:"Inviare l'email con il link ai PROVINI?\n\nPrima assicurati di aver caricato le foto NUMERATE nella sua cartella (seleziona tutte \u2192 F2 \u2192 WoV_Nome \u2192 Invio).",
       proofsSent:"Invito ai provini inviato \u2713 \u2014 aspetta la sua risposta coi numeri.",
@@ -179,7 +182,7 @@
       syncFail:"Invio non riuscito — controlla l'URL e la connessione",
     },
     en: {
-      tagline:"Field companion · v0.8.3", newEnc:"+ New encounter", encs:"Encounters",
+      tagline:"Field companion · v0.8.4", newEnc:"+ New encounter", encs:"Encounters",
       emptyT:"No encounters yet.", emptyB:"The first portrait is waiting in a Venetian campo.",
       memWarn:"Warning: session memory — data disappears when this page closes.",
       typeT:"Encounter type", street:"Street", streetD:"Spontaneous street portrait — standard release",
@@ -222,6 +225,9 @@
       deliver:"\ud83d\udce4 Deliver photos (email with folder link)",
       deliverConfirm:"Send the delivery email with the link to her Drive folder?\n\nFirst make sure you UPLOADED the edited photos into her folder (Women of Venice / Incontri / \u2026).",
       deliverSent:"Delivery request sent \u2713 \u2014 check that the email arrived (also as [copia] to you).",
+      sendPhotos:"\ud83d\udcf8 Send Photos (choose from device)",
+      sendPhotosConfirm:n=>`Upload ${n} photo(s) and email them to her right now?`,
+      sendPhotosSent:n=>`\u2713 ${n} photo(s) uploaded and sent!`,
       proofs:"\ud83d\uddbc Send proofs (she picks)",
       proofsConfirm:"Send the email with the PROOFS link?\n\nFirst make sure you uploaded the NUMBERED photos into her folder (select all \u2192 F2 \u2192 WoV_Name \u2192 Enter).",
       proofsSent:"Proofs invitation sent \u2713 \u2014 wait for her reply with the numbers.",
@@ -499,6 +505,9 @@
         ${e.story?`<div class="soft" style="margin:14px 0"><div class="lbl" style="color:var(--peach)">${_t.herStory}</div><div class="serif" style="font-style:italic;font-size:15px;color:var(--ink)">"${esc(e.story)}"</div></div>`:""}
         ${e.audio?`<div style="margin:14px 0"><div class="lbl">${_t.memo}</div><audio controls src="${e.audio}" style="width:100%"></audio></div>`:""}
         ${e.signature?`<div style="margin:14px 0"><div class="lbl">${_t.signature}</div><img src="${e.signature}" style="width:100%;border:1.5px solid var(--inkF);border-radius:14px;background:#fff"></div>`:""}
+        <button class="btn" data-a="sendPhotos" ${S.busy?"disabled":""}>${S.busy?"…":_t.sendPhotos}</button>
+        <input type="file" id="f-sendphotos" accept="image/*" multiple style="display:none">
+        <div style="height:12px"></div>
         <button class="btn ghost" data-a="proofsOne" ${S.busy?"disabled":""}>${S.busy?"…":_t.proofs}</button>
         <div style="height:12px"></div>
         <button class="btn" data-a="deliverOne" ${S.busy?"disabled":""}>${S.busy?"…":_t.deliver}</button>
@@ -510,6 +519,7 @@
         ${nx?`<button class="btn ghost" data-a="advance">${_t.advance}: ${nx} →</button><div style="height:12px"></div>`:""}
         <button class="btn danger" data-a="erase">${_t.erase}</button>
         ${S.note?`<div class="note">${S.note}</div>`:""}`);
+      bindDetailInputs();
     }
 
     else if(S.view==="leadv"){
@@ -650,6 +660,30 @@
     if(recMedia && recMedia.state!=="inactive") recMedia.stop();
   }
 
+  function bindDetailInputs(){
+    const fp=document.getElementById("f-sendphotos");
+    if(fp) fp.onchange=async()=>{
+      const files=Array.from(fp.files||[]);
+      if(!files.length) return;
+      if(!window.confirm(t().sendPhotosConfirm(files.length))){ fp.value=""; return; }
+      S.busy=true; render();
+      try{
+        const filesB64=[];
+        for(const f of files){
+          const b64=await new Promise(res=>{ const r=new FileReader(); r.onloadend=()=>res(r.result.split(",")[1]); r.readAsDataURL(f); });
+          filesB64.push({ name:f.name, mime:f.type||"image/jpeg", data:b64 });
+        }
+        await fetch(effUrl(), { method:"POST", mode:"no-cors",
+          headers:{ "Content-Type":"text/plain;charset=utf-8" },
+          body: JSON.stringify({ action:"webshare", id:S.sel.id, files:filesB64 }) });
+        S.busy=false; fp.value="";
+        alert(t().sendPhotosSent(files.length));
+        if(S.sel.status!=="Published"){ S.sel.status="Delivered"; await saveEnc(S.sel); }
+        render();
+      }catch(err){ S.busy=false; fp.value=""; alert("\u2717 "+t().syncFail+"\n\n"+err); render(); }
+    };
+  }
+
   // ——— actions ———
   document.getElementById("wov-app").addEventListener("click", async ev=>{
     const b=ev.target.closest("[data-a]"); if(!b) return;
@@ -697,6 +731,7 @@
       S.view = (a==="closeNew") ? "type" : "home";
       render();
     }
+    else if(a==="sendPhotos"){ const fp=document.getElementById("f-sendphotos"); if(fp) fp.click(); }
     else if(a==="open"){ S.sel=S.encs.find(e=>e.id===v); S.note=""; if(S.sel){ S.view="detail"; render(); } }
     else if(a==="syncOne"){
       if(S.busy) return;
