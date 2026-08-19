@@ -516,7 +516,6 @@
         <div style="height:12px"></div>
         <button class="btn ghost" data-a="syncOne" ${S.busy?"disabled":""}>${S.busy?"…":_t.syncBtn}</button>
         <div style="height:12px"></div>
-        ${nx?`<button class="btn ghost" data-a="advance">${_t.advance}: ${nx} →</button><div style="height:12px"></div>`:""}
         <button class="btn danger" data-a="erase">${_t.erase}</button>
         ${S.note?`<div class="note">${S.note}</div>`:""}`);
       bindDetailInputs();
