@@ -673,9 +673,9 @@
           const b64=await new Promise(res=>{ const r=new FileReader(); r.onloadend=()=>res(r.result.split(",")[1]); r.readAsDataURL(f); });
           filesB64.push({ name:f.name, mime:f.type||"image/jpeg", data:b64 });
         }
-        await fetch(effUrl(), { method:"POST", mode:"no-cors",
+     await fetch(effUrl(), { method:"POST", mode:"no-cors",
           headers:{ "Content-Type":"text/plain;charset=utf-8" },
-          body: JSON.stringify({ action:"webshare", id:S.sel.id, files:filesB64 }) });
+          body: JSON.stringify({ action:"webshare", id:S.sel.id, name:S.sel.name, files:filesB64 }) });
         S.busy=false; fp.value="";
         alert(t().sendPhotosSent(files.length));
         if(S.sel.status!=="Published"){ S.sel.status="Delivered"; await saveEnc(S.sel); }
