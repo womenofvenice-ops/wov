@@ -667,10 +667,21 @@
       if(!window.confirm(t().sendPhotosConfirm(files.length))){ fp.value=""; return; }
       S.busy=true; render();
       try{
-        const filesB64=[];
+                const filesB64=[];
         for(const f of files){
-          const b64=await new Promise(res=>{ const r=new FileReader(); r.onloadend=()=>res(r.result.split(",")[1]); r.readAsDataURL(f); });
-          filesB64.push({ name:f.name, mime:f.type||"image/jpeg", data:b64 });
+          const resizedB64 = await new Promise(res=>{
+            const img=new Image();
+            img.onload=()=>{
+              const maxEdge=2400;
+              const scale=Math.min(1, maxEdge/Math.max(img.width,img.height));
+              const c=document.createElement("canvas");
+              c.width=Math.round(img.width*scale); c.height=Math.round(img.height*scale);
+              c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+              res(c.toDataURL("image/jpeg",0.88).split(",")[1]);
+            };
+            img.src=URL.createObjectURL(f);
+          });
+          filesB64.push({ name:f.name, mime:"image/jpeg", data:resizedB64 });
         }
      await fetch(effUrl(), { method:"POST", mode:"no-cors",
           headers:{ "Content-Type":"text/plain;charset=utf-8" },
