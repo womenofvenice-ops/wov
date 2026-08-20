@@ -129,10 +129,10 @@
       contact:"Contatto", email:"Email (per la consegna) *", emailErr:"Controlla l'email: serve per inviarle le foto.",
       ig:"Instagram", phone:"Telefono / WhatsApp", photoL:"Foto di verifica (facoltativa)",
       take:"📷 Scatta / carica", replace:"Sostituisci foto", next:"Avanti →",
-            storyT:"La sua storia", storyP:"“Cosa ti ha portato a Venezia?” — scrivi la sua risposta con le sue parole.",
+                  storyP:"“Cosa ti ha portato a Venezia?” — scrivi la tua risposta con le tue parole.",
       storyHint:"\ud83d\udca1 Serve un aggancio?", storyHintQ1:"Quanto ti fermi a Venezia?",
       storyHintQ2:"Qual \u00e8 stato il tuo momento preferito finora?", storyHintQ3:"Cosa ti ha portato qui?",
-      storyPh:"Le sue parole…", finish:"Concludi incontro →", skip:"Salta — la chiedo dopo",
+      storyPh:"Le tue parole…", finish:"Concludi incontro →", skip:"Salta — la chiedo dopo",
       doneT:"Fatto!",
       doneB:(e,d)=>`Riceverai i tuoi ritratti a ${e} entro ${d} giorni, insieme a una copia di questo accordo. Grazie di aver fatto parte del progetto.`,
       close:"Chiudi ✓", closeNew:"Chiudi e nuovo incontro",
@@ -203,10 +203,10 @@
       contact:"Contact", email:"Email (for delivery) *", emailErr:"Please check the email — it's how her photos arrive.",
       ig:"Instagram", phone:"Phone / WhatsApp", photoL:"Verification photo (optional)",
       take:"📷 Take / upload", replace:"Replace photo", next:"Next →",
-            storyT:"Her story", storyP:"“What brought you to Venice?” — write her answer in her own words.",
+                  storyP:"“What brought you to Venice?” — write your answer in your own words.",
       storyHint:"\ud83d\udca1 Need an opener?", storyHintQ1:"How long are you in Venice for?",
       storyHintQ2:"What's been your favorite moment so far?", storyHintQ3:"What made you want to come here?",
-      storyPh:"Her words…", finish:"Finish encounter →", skip:"Skip — I'll ask later",
+      storyPh:"Your words…", finish:"Finish encounter →", skip:"Skip — I'll ask later",
       doneT:"Done!",
       doneB:(e,d)=>`Your portraits will reach ${e} within ${d} days, together with a copy of this agreement. Thank you for being part of the project.`,
       close:"Close ✓", closeNew:"Close & new encounter",
@@ -465,10 +465,8 @@
         </div>
         ${S.draft.audio && !S.recOn ? `<audio controls src="${S.draft.audio}" style="width:100%;margin-bottom:14px"></audio>` : ''}
         <textarea id="f-story" rows="5" class="serif" placeholder="${_t.storyPh}" style="margin-bottom:16px">${esc(S.draft.story)}</textarea>
-        <button class="btn" data-a="toDone">${_t.finish}</button>
-        <div style="height:12px"></div>
-        <button class="btn ghost" data-a="toDone">${_t.skip}</button>`);
-      bindDraftInputs();
+                <button class="btn" data-a="toDone">${_t.finish}</button>
+    bindDraftInputs();
     }
 
     else if(S.view==="done" && S.draft){
@@ -719,7 +717,7 @@
         scopes:{social:false,portfolio:false,prints:false,book:false,commercial:false},
         nameStory:false, ageOk:false, signature:null, photo:null, email:"", ig:"", phone:"", story:"",
         status:"Signed", tfp: v==="tfp"?{count:5,days:10,credit:""}:null, deliveryDays:7, synced:null, audio:null };
-      S.note="";
+      S.note=""; S.hintOpen=true;
       if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
         p=>{ if(S.draft) S.draft.gps={lat:p.coords.latitude,lng:p.coords.longitude}; }, ()=>{}, {timeout:4000});
       S.view="agreement"; render();
