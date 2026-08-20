@@ -129,7 +129,9 @@
       contact:"Contatto", email:"Email (per la consegna) *", emailErr:"Controlla l'email: serve per inviarle le foto.",
       ig:"Instagram", phone:"Telefono / WhatsApp", photoL:"Foto di verifica (facoltativa)",
       take:"📷 Scatta / carica", replace:"Sostituisci foto", next:"Avanti →",
-      storyT:"La sua storia", storyP:"“Cosa ti ha portato a Venezia?” — scrivi la sua risposta con le sue parole.",
+            storyT:"La sua storia", storyP:"“Cosa ti ha portato a Venezia?” — scrivi la sua risposta con le sue parole.",
+      storyHint:"\ud83d\udca1 Serve un aggancio?", storyHintQ1:"Quanto ti fermi a Venezia?",
+      storyHintQ2:"Qual \u00e8 stato il tuo momento preferito finora?", storyHintQ3:"Cosa ti ha portato qui?",
       storyPh:"Le sue parole…", finish:"Concludi incontro →", skip:"Salta — la chiedo dopo",
       doneT:"Fatto!",
       doneB:(e,d)=>`Riceverai i tuoi ritratti a ${e} entro ${d} giorni, insieme a una copia di questo accordo. Grazie di aver fatto parte del progetto.`,
@@ -201,7 +203,9 @@
       contact:"Contact", email:"Email (for delivery) *", emailErr:"Please check the email — it's how her photos arrive.",
       ig:"Instagram", phone:"Phone / WhatsApp", photoL:"Verification photo (optional)",
       take:"📷 Take / upload", replace:"Replace photo", next:"Next →",
-      storyT:"Her story", storyP:"“What brought you to Venice?” — write her answer in her own words.",
+            storyT:"Her story", storyP:"“What brought you to Venice?” — write her answer in her own words.",
+      storyHint:"\ud83d\udca1 Need an opener?", storyHintQ1:"How long are you in Venice for?",
+      storyHintQ2:"What's been your favorite moment so far?", storyHintQ3:"What made you want to come here?",
       storyPh:"Her words…", finish:"Finish encounter →", skip:"Skip — I'll ask later",
       doneT:"Done!",
       doneB:(e,d)=>`Your portraits will reach ${e} within ${d} days, together with a copy of this agreement. Thank you for being part of the project.`,
@@ -454,7 +458,8 @@
       el.innerHTML = wrap(`
         <div class="top"><div class="title serif">${_t.storyT}</div>${langHTML()}</div>
         <div class="soft" style="margin-bottom:16px"><div class="serif" style="font-style:italic;font-size:15px;color:var(--ink)">${_t.storyP}</div></div>
-        <div class="row" style="margin-bottom:14px;flex-wrap:wrap">
+        <button data-a="hintToggle" style="background:none;border:none;color:var(--peach);font-size:13px;font-weight:600;margin:-8px 0 14px;cursor:pointer;text-align:left;display:block">${_t.storyHint} ${S.hintOpen?"\u25b2":"\u25bc"}</button>
+        ${S.hintOpen?`<div class="soft" style="margin:-4px 0 16px"><div style="font-size:14px;line-height:1.7;color:var(--ink)">1. ${_t.storyHintQ1}<br>2. ${_t.storyHintQ2}<br>3. ${_t.storyHintQ3}</div></div>`:""}        <div class="row" style="margin-bottom:14px;flex-wrap:wrap">
           ${S.recOn?`<button class="btn" data-a="recStop" style="width:auto;padding:12px 18px;font-size:14px">${_t.recStop} <span id="rec-timer"></span></button>`
                    :`<button class="btn ghost" data-a="recStart" style="width:auto;padding:12px 18px;font-size:14px">${S.draft.audio?_t.recRedo:_t.rec}</button>`}
         </div>
@@ -775,6 +780,7 @@
         render();
       }
     }
+        else if(a==="hintToggle"){ S.hintOpen=!S.hintOpen; render(); }
     else if(a==="recStart"){ startRec(); }
     else if(a==="recStop"){ stopRec(); }
     else if(a==="leadOpen"){ S.note=""; S.ld={name:"",email:"",ig:"",where:"",note:""}; S.view="leadv"; render(); }
