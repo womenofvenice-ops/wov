@@ -465,8 +465,8 @@
         </div>
         ${S.draft.audio && !S.recOn ? `<audio controls src="${S.draft.audio}" style="width:100%;margin-bottom:14px"></audio>` : ''}
         <textarea id="f-story" rows="5" class="serif" placeholder="${_t.storyPh}" style="margin-bottom:16px">${esc(S.draft.story)}</textarea>
-                <button class="btn" data-a="toDone">${_t.finish}</button>
-    bindDraftInputs();
+                        <button class="btn" data-a="toDone">${_t.finish}</button>`);
+      bindDraftInputs();
     }
 
     else if(S.view==="done" && S.draft){
